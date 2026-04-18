@@ -1,0 +1,317 @@
+[
+{
+"recipeId": "12d98c2a-0960-4d15-9daf-6651b9761618",
+"userId": "1f3d1e21-6c38-44f4-9043-15be0c282d58",
+"name": "Spaghetti Bolognese",
+"recipeDescription": "A classic Italian dish with pasta and meat sauce",
+"cookingTime": "00:45:00",
+"createdAt": "2023-05-28",
+"kiloCalories": 500,
+"ingredients": [
+{
+"name": "Salt",
+"quantity": "to taste"
+},
+{
+"name": "Ground Beef",
+"quantity": "500g"
+},
+{
+"name": "Tomatoes",
+"quantity": "400g"
+},
+{
+"name": "Spaghetti",
+"quantity": "200g"
+},
+{
+"name": "Pepper",
+"quantity": "to taste"
+},
+{
+"name": "Garlic",
+"quantity": "2 cloves"
+},
+{
+"name": "Onion",
+"quantity": "1"
+},
+{
+"name": "Olive Oil",
+"quantity": "2 tablespoons"
+}
+]
+},
+{
+"recipeId": "3f903bfc-f8af-4c3b-9ba1-4077c58b2932",
+"userId": "088e0410-1457-43a4-86af-00cdec912243",
+"name": "Chicken Biriyani",
+"recipeDescription": "A flavorful and aromatic rice dish with chicken",
+"cookingTime": "01:30:00",
+"createdAt": "2023-05-28",
+"kiloCalories": 600,
+"ingredients": [
+{
+"name": "Garlic",
+"quantity": "6 cloves"
+},
+{
+"name": "Basmati Rice",
+"quantity": "2 cups"
+},
+{
+"name": "Red Chili Powder",
+"quantity": "1/2 teaspoon"
+},
+{
+"name": "Salt",
+"quantity": "to taste"
+},
+{
+"name": "Ginger",
+"quantity": "1 inch piece"
+},
+{
+"name": "Water",
+"quantity": "4 cups"
+},
+{
+"name": "Milk",
+"quantity": "2 tablespoons"
+},
+{
+"name": "Mint Leaves",
+"quantity": "1/4 cup"
+},
+{
+"name": "Cloves",
+"quantity": "4"
+},
+{
+"name": "Cinnamon Stick",
+"quantity": "1 inch piece"
+},
+{
+"name": "Onion",
+"quantity": "2 large"
+},
+{
+"name": "Yogurt",
+"quantity": "1/2 cup"
+},
+{
+"name": "Chicken",
+"quantity": "500 grams"
+},
+{
+"name": "Garam Masala",
+"quantity": "1 teaspoon"
+},
+{
+"name": "Oil",
+"quantity": "2 tablespoons"
+},
+{
+"name": "Turmeric Powder",
+"quantity": "1/2 teaspoon"
+},
+{
+"name": "Ghee",
+"quantity": "2 tablespoons"
+},
+{
+"name": "Bay Leaves",
+"quantity": "2"
+},
+{
+"name": "Coriander Leaves",
+"quantity": "1/4 cup"
+},
+{
+"name": "Tomato",
+"quantity": "2 medium"
+},
+{
+"name": "Cumin Seeds",
+"quantity": "1 teaspoon"
+},
+{
+"name": "Green Chili",
+"quantity": "2"
+},
+{
+"name": "Cardamom Pods",
+"quantity": "4"
+},
+{
+"name": "Saffron",
+"quantity": "a pinch"
+}
+]
+},
+{
+"recipeId": "6242adbd-273f-45a3-945b-8570b3ce3985",
+"userId": "520f04ba-bdab-4735-a2e6-34ce3cc57c9b",
+"name": "Chicken Stir-Fry",
+"recipeDescription": "A quick and delicious stir-fry with chicken and vegetables",
+"cookingTime": "00:30:00",
+"createdAt": "2023-05-28",
+"kiloCalories": 350,
+"ingredients": [
+{
+"name": "Black Pepper",
+"quantity": "to taste"
+},
+{
+"name": "Broccoli",
+"quantity": "1 head"
+},
+{
+"name": "Vegetable Oil",
+"quantity": "2 tablespoons"
+},
+{
+"name": "Bell Pepper",
+"quantity": "1"
+},
+{
+"name": "Salt",
+"quantity": "to taste"
+},
+{
+"name": "Chicken Breast",
+"quantity": "2"
+},
+{
+"name": "Ginger",
+"quantity": "1 teaspoon"
+},
+{
+"name": "Carrots",
+"quantity": "2"
+},
+{
+"name": "Garlic",
+"quantity": "3 cloves"
+},
+{
+"name": "Soy Sauce",
+"quantity": "2 tablespoons"
+}
+]
+},
+{
+"recipeId": "77a92faf-5370-4433-b90f-478ead3f5b32",
+"userId": "520f04ba-bdab-4735-a2e6-34ce3cc57c9b",
+"name": "Vegetable Curry",
+"recipeDescription": "A flavorful and spicy vegetable curry",
+"cookingTime": "00:45:00",
+"createdAt": "2023-05-28",
+"kiloCalories": 250,
+"ingredients": [
+{
+"name": "Coconut Milk",
+"quantity": "1 can"
+},
+{
+"name": "Ginger",
+"quantity": "1 tablespoon"
+},
+{
+"name": "Turmeric Powder",
+"quantity": "1/2 teaspoon"
+},
+{
+"name": "Cauliflower",
+"quantity": "1 head"
+},
+{
+"name": "Potatoes",
+"quantity": "3"
+},
+{
+"name": "Onion",
+"quantity": "1"
+},
+{
+"name": "Carrots",
+"quantity": "2"
+},
+{
+"name": "Salt",
+"quantity": "to taste"
+},
+{
+"name": "Curry Powder",
+"quantity": "2 teaspoons"
+},
+{
+"name": "Vegetable Oil",
+"quantity": "2 tablespoons"
+},
+{
+"name": "Cilantro",
+"quantity": "for garnish"
+},
+{
+"name": "Green Peas",
+"quantity": "1 cup"
+},
+{
+"name": "Garlic",
+"quantity": "3 cloves"
+}
+]
+},
+{
+"recipeId": "e01244da-6bb3-484d-9c03-2f347efcc05b",
+"userId": "088e0410-1457-43a4-86af-00cdec912243",
+"name": "Chocolate Chip Cookies",
+"recipeDescription": "Classic homemade chocolate chip cookies",
+"cookingTime": "00:25:00",
+"createdAt": "2023-05-28",
+"kiloCalories": 200,
+"ingredients": [
+{
+"name": "Butter",
+"quantity": "1 cup"
+},
+{
+"name": "All-Purpose Flour",
+"quantity": "2 1/4 cups"
+},
+{
+"name": "Brown Sugar",
+"quantity": "3/4 cup"
+},
+{
+"name": "Chocolate Chips",
+"quantity": "2 cups"
+},
+{
+"name": "Chopped Nuts",
+"quantity": "1 cup"
+},
+{
+"name": "Vanilla Extract",
+"quantity": "1 teaspoon"
+},
+{
+"name": "Sugar",
+"quantity": "3/4 cup"
+},
+{
+"name": "Egg",
+"quantity": "1"
+},
+{
+"name": "Salt",
+"quantity": "1/2 teaspoon"
+},
+{
+"name": "Baking Soda",
+"quantity": "1/2 teaspoon"
+}
+]
+}
+]

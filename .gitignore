@@ -1,0 +1,38 @@
+# IDE/workspace metadata
+.metadata/
+languageServers-log/
+.runtime-logs/
+.project
+**/.git.frontend-backup/
+
+# Java/Maven build output
+**/target/
+**/.classpath
+**/.factorypath
+**/.project
+**/.settings/
+
+# Frontend dependencies and builds
+**/node_modules/
+**/build/
+**/.pnp
+**/.pnp.js
+
+# Logs and generated artifacts
+*.log
+*.class
+*.zip
+*.dumpstream
+coverage/
+coverage.png
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

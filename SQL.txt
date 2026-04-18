@@ -1,0 +1,55 @@
+##JOIN EXAMPLE:
+SELECT * FROM users JOIN recipes ON users.user_id = recipes.user_id;
+
+##SORT ALPHABETICALLY ASCENDING ORDER:
+SELECT * FROM users ORDER BY user_name ASC;
+
+##SHOW CREATE TABLE DATA
+show create table ingredient;
+
+##TOTAL INGREDIENTS SORTED WITH COUNT:
+SELECT name, COUNT(*) as user_count FROM ingredient GROUP BY name order by name ASC;
+
+##COUNT OF INGREDIENT USED WITH ID:
+SELECT COUNT(*) AS ingredient_count FROM ingredient WHERE ingredient_id = '010d616b-2d8f-4bde-9e3b-3eb5ba9f2507';
+
+##SORT RATING 
+SELECT rating, COUNT(*) as rating_count FROM rating GROUP BY rating order by rating ASC;
+
+##RECIPE - RATING sorted data (LEFT JOIN)
+SELECT r.recipe_name AS recipe_name, ra.rating
+FROM recipes AS r
+LEFT JOIN rating AS ra ON r.recipe_id = ra.recipe_id
+ORDER BY ra.rating ASC;
+
+#RECIPE - RATING - COMMENT (LEFT JOIN)
+SELECT r.recipe_name AS recipe_name, ra.rating, ra.comment
+FROM recipes AS r
+LEFT JOIN rating AS ra ON r.recipe_id = ra.recipe_id;
+
+##RECIPE-RATING-COMMENT-USERNAME (LEFT JOIN) SORTED
+SELECT r.recipe_name AS recipe_name, ra.rating, ra.comment, u.user_name AS user_name
+FROM recipes AS r
+LEFT JOIN rating AS ra ON r.recipe_id = ra.recipe_id
+LEFT JOIN users AS u ON ra.user_id = u.user_id
+ORDER BY ra.rating ASC;
+
+##RECIPE - RATING - USERNAME (FULL JOIN) LEFT+RIGHT
+SELECT r.recipe_name AS recipe_name, ra.rating, u.user_name AS user_name
+FROM recipes AS r
+LEFT JOIN rating AS ra ON r.recipe_id = ra.recipe_id
+LEFT JOIN users AS u ON ra.user_id = u.user_id
+UNION
+SELECT r.recipe_name AS recipe_name, ra.rating, u.user_name AS user_name
+FROM recipes AS r
+RIGHT JOIN rating AS ra ON r.recipe_id = ra.recipe_id
+RIGHT JOIN users AS u ON ra.user_id = u.user_id;
+
+##CROSS JOIN OF DATA EXAMPLE
+SELECT u.user_name AS user_name, r.recipe_name AS recipe_name
+FROM users AS u
+CROSS JOIN recipes AS r;
+
+
+
+
