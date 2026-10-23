@@ -1,0 +1,39 @@
+.sn-art {
+  display: block;
+  max-width: 100%;
+}
+
+.sn-steam {
+  animation: sn-steam 2.8s ease-in-out infinite;
+}
+
+.sn-steam--2 { animation-delay: 0.45s; }
+.sn-steam--3 { animation-delay: 0.9s; }
+
+@keyframes sn-steam {
+  0% { opacity: 0; transform: translateY(6px); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+.sn-float {
+  animation: sn-float 5s ease-in-out infinite;
+}
+
+@keyframes sn-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.sn-twinkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sn-twinkle 2.4s ease-in-out infinite;
+}
+
+.sn-twinkle--late { animation-delay: 1.2s; }
+
+@keyframes sn-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.7) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.1) rotate(20deg); }
+}

@@ -3,3 +3,19 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+// jsdom has no scrolling; App scrolls to the top on every route change
+window.scrollTo = jest.fn();
+
+// jsdom has no IntersectionObserver; report everything as on screen
+class IntersectionObserverStub {
+  constructor(callback) {
+    this.callback = callback;
+  }
+  observe(target) {
+    this.callback([{ isIntersecting: true, target, intersectionRatio: 1 }], this);
+  }
+  unobserve() {}
+  disconnect() {}
+}
+window.IntersectionObserver = IntersectionObserverStub;

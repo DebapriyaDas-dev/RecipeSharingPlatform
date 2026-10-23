@@ -1,15 +1,36 @@
-import React, { useState, useEffect } from "react";
-import { Row, Col, Button, Form, InputGroup, Alert } from "react-bootstrap";
+import React, { useState } from "react";
 import {
   AiOutlineUser,
   AiOutlineMail,
   AiOutlineEyeInvisible,
   AiOutlineEye,
+  AiOutlineArrowRight,
+  AiOutlineCheck,
 } from "react-icons/ai";
 import { VscKey } from "react-icons/vsc";
+import { FiCheck, FiX } from "react-icons/fi";
+import { GiChefToque } from "react-icons/gi";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
+import { API_BASE, errorMessage } from "../api";
+import heroImage from "../images/img3.jpg";
+import AuthShell from "./AuthShell";
+import { container, rise } from "./Login";
 import "./AddUser.css";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Mirrors the backend's password validation on the User entity
+const PASSWORD_RULES = [
+  { label: "8+ characters", test: (p) => p.length >= 8 },
+  { label: "A number", test: (p) => /[0-9]/.test(p) },
+  { label: "A special character (@#$%^&+=)", test: (p) => /[@#$%^&+=]/.test(p) },
+  { label: "No spaces", test: (p) => p.length > 0 && !/\s/.test(p) },
+];
+
+const STRENGTH = ["Too weak", "Weak", "Getting there", "Almost", "Strong"];
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -18,165 +39,209 @@ const AddUser = () => {
     password: "",
     email: "",
   });
-
   const [showPassword, setShowPassword] = useState(false);
-  const [userExists, setUserExists] = useState(false);
+  const [touched, setTouched] = useState({});
+  const [status, setStatus] = useState("idle"); // idle | loading | success
+  const [serverError, setServerError] = useState("");
 
-  const [passwordError, setPasswordError] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const passed = PASSWORD_RULES.filter((rule) => rule.test(user.password)).length;
+  const passwordValid = passed === PASSWORD_RULES.length;
+  const emailValid = EMAIL_REGEX.test(user.email);
+  const nameValid = user.name.trim().length >= 3;
 
   const handleChange = (e) => {
+    setServerError("");
     setUser({
       ...user,
       [e.target.name]: e.target.value,
     });
   };
 
-  useEffect(() => {
-    const validatePassword = () => {
-      const passwordRegex = /^(?=.*[0-9])(?=.*[@#$%^&+=])(?=\S+$).*$/;
-      if (user.password.length === 0) {
-        setPasswordError("");
-      } else if (user.password.length < 8) {
-        setPasswordError("Password must be at least 8 characters long");
-      } else if (!passwordRegex.test(user.password)) {
-        setPasswordError(
-          "Password must contain at least one digit and one special character"
-        );
-      } else {
-        setPasswordError("");
-      }
-    };
-
-    validatePassword();
-  }, [user.password]);
-
-  useEffect(() => {
-    const validateEmail = () => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (user.email.length === 0) {
-        setEmailError("");
-      } else if (!emailRegex.test(user.email)) {
-        setEmailError("Invalid email address");
-      } else {
-        setEmailError("");
-      }
-    };
-
-    validateEmail();
-  }, [user.email]);
-
-  // useEffect(() => {
-  //   const loadUser = async () => {
-  //     try {
-  //       const result = await axios.get("http://localhost:8080/users");
-  //       setUserExists(
-  //         result.data.some((existingUser) => existingUser.email === user.email)
-  //       );
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   loadUser();
-  // }, [user.email]);
+  const handleBlur = (e) => setTouched({ ...touched, [e.target.name]: true });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setTouched({ name: true, email: true, password: true });
+    if (!nameValid || !emailValid || !passwordValid || status !== "idle") return;
+    setStatus("loading");
     try {
-      if (userExists) {
-        alert(
-          "User already exists with the provided email. Please Log in to the application."
-        );
-      } else {
-        await axios.post("http://localhost:8080/users/register", user);
-        alert("Registration successful. Please log in " + user.name);
-        navigate("/");
-      }
+      await axios.post(`${API_BASE}/users/register`, user);
+      setStatus("success");
+      toast.success("Registration successful. Please log in, " + user.name);
+      setTimeout(() => navigate("/"), 1200);
     } catch (err) {
       console.log(err);
+      setStatus("idle");
+      setServerError(errorMessage(err, "Registration failed. That email may already be registered."));
     }
   };
 
-  const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const fieldError = (name, valid, message) =>
+    touched[name] && !valid ? <p className="sn-reg__error">{message}</p> : null;
 
   return (
-    <div>
-      <Row className="justify-content-center mt-5">
-        <Col xs={11} sm={10} md={8} lg={4} className="p-4 rounded bg-light">
-          <h1 className="text-center border-bottom pb-3 text-primary">
-            Sign Up
-          </h1>
-          <Form onSubmit={e=>e.preventDefault()}>
-            <InputGroup className="mb-4 mt-5">
-              <InputGroup.Text>
-                <AiOutlineUser size="1.8rem" />
-              </InputGroup.Text>
-              <Form.Control
-                name="name"
-                type="text"
-                value={user.name || ""}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                minLength={3}
-                required
-              />
-            </InputGroup>
-            <InputGroup className="mb-4">
-              <InputGroup.Text>
-                <AiOutlineMail size="1.8rem" />
-              </InputGroup.Text>
-              <Form.Control
-                name="email"
-                type="email"
-                value={user.email || ""}
-                onChange={handleChange}
-                placeholder="Enter your email-id"
-                required
-              />
-            </InputGroup>
-            {emailError && <div className="alert-style">{emailError}</div>}
-            <InputGroup className="mb-4">
-              <InputGroup.Text>
-                <VscKey size="1.8rem" />
-              </InputGroup.Text>
-              <Form.Control
-                name="password"
-                className="form-control"
-                type={showPassword ? "text" : "password"}
-                value={user.password || ""}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                minLength={8}
-                required
-              />
-              <button
-                variant="light"
-                onClick={handleTogglePassword}
-                className="border-0 bg-transparent"
-              >
-                {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-              </button>
-            </InputGroup>
-            {passwordError && (
-              <div className="alert-style">{passwordError}</div>
-            )}
+    <AuthShell
+      image={heroImage}
+      rotatingWords={["Cook", "Share", "Rate", "Repeat"]}
+      headline="Your recipes deserve an audience."
+      copy="Create a free account to post your dishes, collect ratings and discover what other cooks are making."
+      chips={["👩‍🍳 Your own cookbook", "💬 Real feedback", "🌶️ New flavours"]}
+    >
+      <div className="lx-card">
+        <motion.form onSubmit={handleSubmit} variants={container} initial="hidden" animate="show" noValidate>
+          <motion.div variants={rise} className="lx-logo">
+            <GiChefToque />
+          </motion.div>
+          <motion.p variants={rise} className="lx-eyebrow">
+            Join the club
+          </motion.p>
+          <motion.h1 variants={rise} className="lx-title">
+            Create <em>account</em>
+          </motion.h1>
+          <motion.p variants={rise} className="lx-subtitle">
+            It takes less than a minute.
+          </motion.p>
+
+          <motion.div variants={rise} className="lx-field">
+            <AiOutlineUser className="lx-field__icon" aria-hidden="true" />
+            <input
+              id="reg-name"
+              name="name"
+              type="text"
+              value={user.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder=" "
+              autoComplete="name"
+              aria-invalid={touched.name && !nameValid}
+              required
+            />
+            <label htmlFor="reg-name">Full name</label>
+            <span className="lx-field__glow" aria-hidden="true" />
+          </motion.div>
+          {fieldError("name", nameValid, "Name must be at least 3 characters.")}
+
+          <motion.div variants={rise} className="lx-field">
+            <AiOutlineMail className="lx-field__icon" aria-hidden="true" />
+            <input
+              id="reg-email"
+              name="email"
+              type="email"
+              value={user.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder=" "
+              autoComplete="email"
+              aria-invalid={touched.email && !emailValid}
+              required
+            />
+            <label htmlFor="reg-email">Email address</label>
+            <span className="lx-field__glow" aria-hidden="true" />
+          </motion.div>
+          {fieldError("email", emailValid, "Enter a valid email address.")}
+
+          <motion.div variants={rise} className="lx-field">
+            <VscKey className="lx-field__icon" aria-hidden="true" />
+            <input
+              id="reg-password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={user.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder=" "
+              autoComplete="new-password"
+              aria-invalid={touched.password && !passwordValid}
+              required
+            />
+            <label htmlFor="reg-password">Password</label>
             <button
-              type="submit"
-              onClick={handleSubmit}
-              className="btn btn-outline-primary btn-lg mt-2 submit-button"
-              style={{ width: "100px" }}
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="lx-field__toggle"
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              Submit
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
             </button>
-            <Link className="btn btn-outline-danger btn-lg mt-2" to="/" style={{ width: "100px" }}>
-              Cancel
+            <span className="lx-field__glow" aria-hidden="true" />
+          </motion.div>
+
+          <motion.div variants={rise} className="sn-reg__strength" aria-live="polite">
+            <div className="sn-reg__meter">
+              {PASSWORD_RULES.map((rule, i) => (
+                <span key={rule.label} className={i < passed ? `is-on is-on--${passed}` : ""} />
+              ))}
+            </div>
+            <span className="sn-reg__strength-label">{user.password ? STRENGTH[passed] : "Password strength"}</span>
+          </motion.div>
+
+          <motion.ul variants={rise} className="sn-reg__rules">
+            {PASSWORD_RULES.map((rule) => {
+              const ok = rule.test(user.password);
+              return (
+                <li key={rule.label} className={ok ? "is-ok" : ""}>
+                  <motion.span
+                    key={String(ok)}
+                    initial={{ scale: 0.4, rotate: -45 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 22 }}
+                  >
+                    {ok ? <FiCheck /> : <FiX />}
+                  </motion.span>
+                  {rule.label}
+                </li>
+              );
+            })}
+          </motion.ul>
+
+          <div className="lx-error" aria-live="polite">
+            <AnimatePresence>
+              {serverError && (
+                <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
+                  {serverError}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <motion.button
+            variants={rise}
+            type="submit"
+            className={`lx-button lx-button--${status}`}
+            whileHover={status === "idle" ? { scale: 1.02 } : undefined}
+            whileTap={status === "idle" ? { scale: 0.98 } : undefined}
+            disabled={status !== "idle"}
+          >
+            <span className="lx-button__shine" aria-hidden="true" />
+            {status === "loading" && (
+              <>
+                <span className="lx-spinner" aria-hidden="true" /> Creating account…
+              </>
+            )}
+            {status === "success" && (
+              <>
+                <AiOutlineCheck /> You're in
+              </>
+            )}
+            {status === "idle" && (
+              <>
+                Create account <AiOutlineArrowRight className="lx-button__arrow" />
+              </>
+            )}
+          </motion.button>
+
+          <motion.div variants={rise} className="lx-divider">
+            <span>already a member?</span>
+          </motion.div>
+          <motion.p variants={rise} className="lx-footer">
+            Welcome back to the table.{" "}
+            <Link to="/" className="lx-link">
+              Sign in
             </Link>
-          </Form>
-        </Col>
-      </Row>
-    </div>
+          </motion.p>
+        </motion.form>
+      </div>
+    </AuthShell>
   );
 };
 

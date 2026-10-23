@@ -1,0 +1,140 @@
+.sn-people__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 18px;
+  font-size: 0.95rem;
+  color: var(--sn-muted);
+}
+
+.sn-people__stats strong {
+  color: var(--sn-text);
+  font-weight: 600;
+}
+
+.sn-people__online {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sn-people__online i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sn-success);
+  box-shadow: 0 0 0 0 rgba(95, 211, 141, 0.6);
+  animation: sn-pulse 2s infinite;
+}
+
+@keyframes sn-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(95, 211, 141, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(95, 211, 141, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(95, 211, 141, 0); }
+}
+
+.sn-people__search {
+  max-width: 460px;
+  margin-bottom: 28px;
+}
+
+.sn-people {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.sn-person {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 28px 20px 22px;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+
+.sn-person:hover {
+  border-color: rgba(250, 171, 0, 0.35);
+}
+
+.sn-person--me {
+  border-color: rgba(250, 171, 0, 0.4);
+  background: linear-gradient(180deg, rgba(250, 171, 0, 0.08), var(--sn-surface) 60%);
+}
+
+.sn-person__avatar {
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.sn-person__presence {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--sn-success);
+  border: 3px solid var(--sn-surface-solid);
+}
+
+.sn-person h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.2rem;
+  overflow-wrap: anywhere;
+}
+
+.sn-person__you {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: var(--sn-font);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1a1206;
+  background: var(--sn-gradient);
+}
+
+.sn-person__email {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--sn-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sn-person__email svg {
+  flex-shrink: 0;
+}
+
+.sn-person__cta {
+  margin-top: 8px;
+}
+
+@media (max-width: 520px) {
+  .sn-people {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .sn-person {
+    padding: 20px 12px 16px;
+  }
+
+  .sn-person h3 {
+    font-size: 1rem;
+  }
+
+  .sn-person__email {
+    display: none;
+  }
+}

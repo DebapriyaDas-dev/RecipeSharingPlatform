@@ -1,0 +1,147 @@
+.sn-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(8, 6, 4, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.sn-drawer__panel {
+  display: flex;
+  flex-direction: column;
+  width: min(460px, 100%);
+  height: 100%;
+  background: var(--sn-surface-solid);
+  border-left: 1px solid var(--sn-border);
+  box-shadow: -30px 0 80px -30px rgba(0, 0, 0, 0.9);
+}
+
+.sn-drawer__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px;
+  border-bottom: 1px solid var(--sn-border);
+}
+
+.sn-drawer__thumb {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--sn-border);
+}
+
+.sn-drawer__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.sn-drawer__title .sn-eyebrow {
+  margin-bottom: 4px;
+}
+
+.sn-drawer__title h2 {
+  margin: 0 0 6px;
+  font-size: 1.35rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.sn-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+.sn-drawer__empty {
+  display: grid;
+  justify-items: center;
+  padding: 40px 10px;
+  text-align: center;
+}
+
+.sn-drawer__empty h3 {
+  margin: 16px 0 6px;
+  font-size: 1.3rem;
+}
+
+.sn-drawer__empty p {
+  margin: 0;
+  color: var(--sn-muted);
+}
+
+.sn-reviews {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sn-review {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--sn-border);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.sn-review--mine {
+  border-color: rgba(250, 171, 0, 0.35);
+  background: rgba(250, 171, 0, 0.05);
+}
+
+.sn-review__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.sn-review__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sn-review__top strong {
+  font-weight: 600;
+}
+
+.sn-review p {
+  margin: 8px 0 0;
+  color: #dccfbf;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.sn-review .sn-review__nocomment {
+  color: var(--sn-faint);
+  font-style: italic;
+}
+
+.sn-review__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.sn-drawer__foot {
+  padding: 18px 24px 24px;
+  border-top: 1px solid var(--sn-border);
+}
+
+@media (max-width: 520px) {
+  .sn-drawer__head,
+  .sn-drawer__body,
+  .sn-drawer__foot {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

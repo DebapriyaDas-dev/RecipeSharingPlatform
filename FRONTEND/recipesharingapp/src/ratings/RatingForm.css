@@ -1,0 +1,120 @@
+.sn-rate {
+  overflow: hidden;
+}
+
+.sn-rate__recipe {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 26px 30px;
+  border-bottom: 1px solid var(--sn-border);
+  background: linear-gradient(120deg, rgba(250, 171, 0, 0.1), rgba(226, 87, 43, 0.04) 60%, transparent);
+}
+
+.sn-rate__thumb {
+  width: 84px;
+  height: 84px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--sn-border);
+  box-shadow: 0 16px 30px -16px rgba(0, 0, 0, 0.9);
+}
+
+.sn-rate__recipe h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.sn-rate__recipe .sn-eyebrow {
+  margin-bottom: 4px;
+}
+
+.sn-rate__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: var(--sn-muted);
+}
+
+.sn-rate__body {
+  padding: 30px;
+}
+
+.sn-rate__picker {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 26px 16px;
+  margin-bottom: 26px;
+  border-radius: 20px;
+  border: 1px solid var(--sn-border);
+  background: radial-gradient(120% 120% at 50% 0%, rgba(250, 171, 0, 0.08), transparent 60%);
+}
+
+.sn-rate__question {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.sn-faint {
+  color: var(--sn-faint);
+  font-weight: 400;
+}
+
+.sn-rate__notes {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.sn-rate__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sn-rate__chips .sn-chip {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 0.8rem;
+}
+
+.sn-rate__notes .sn-hint {
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.sn-rate__actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .sn-rate__recipe {
+    padding: 20px;
+    gap: 14px;
+  }
+
+  .sn-rate__thumb {
+    width: 64px;
+    height: 64px;
+  }
+
+  .sn-rate__body {
+    padding: 20px;
+  }
+
+  .sn-rate__notes {
+    flex-direction: column;
+  }
+}

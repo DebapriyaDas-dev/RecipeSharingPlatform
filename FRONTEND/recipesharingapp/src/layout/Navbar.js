@@ -1,205 +1,283 @@
-import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faBurger, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { fab } from "@fortawesome/free-brands-svg-icons";
-import "@fortawesome/fontawesome-svg-core/styles.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "./Navbar.css";
-import { useContext } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
+import {
+  FiHome,
+  FiBookOpen,
+  FiUsers,
+  FiUser,
+  FiPlus,
+  FiLogOut,
+  FiTrash2,
+  FiChevronDown,
+} from "react-icons/fi";
 import { AuthContext } from "../App";
+import { API_BASE } from "../api";
+import { LogoMark } from "../ui/Illustrations";
+import { Avatar } from "../ui/Primitives";
+import ConfirmDialog from "../ui/ConfirmDialog";
+import "./Navbar.css";
 
-library.add(fab);
+const LINKS = [
+  { to: "/home", label: "Home", icon: FiHome },
+  { to: "/recipes", label: "Recipes", icon: FiBookOpen },
+  { to: "/dashboard", label: "Community", icon: FiUsers },
+  { to: "/profile", label: "Profile", icon: FiUser },
+];
+
+export const Brand = ({ to }) => (
+  <Link className="sn-nav__brand" to={to}>
+    <LogoMark size={34} />
+    <span>
+      Recipe<b>Club</b>
+    </span>
+  </Link>
+);
 
 const Navbar = () => {
-  const { loggedIn, setLoggedIn } = useContext(AuthContext);
+  const { setLoggedIn, userName, setUserName } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [dialog, setDialog] = useState(null); // "logout" | "delete"
+  const [busy, setBusy] = useState(false);
+  const accountRef = useRef(null);
+  const name = userName || localStorage.getItem("userName") || "Chef";
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+    setAccountOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!accountOpen) return undefined;
+    const onClick = (e) => accountRef.current && !accountRef.current.contains(e.target) && setAccountOpen(false);
+    const onKey = (e) => e.key === "Escape" && setAccountOpen(false);
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [accountOpen]);
+
+  const clearSession = () => {
+    localStorage.removeItem("userId");
+    localStorage.setItem("loggedIn", false);
+    localStorage.removeItem("userName");
+    setUserName(null);
+  };
 
   const handleLogout = async () => {
-    const confirmLogout = window.confirm("Are you sure you want to log out?");
-    if (confirmLogout) {
-      try {
-        const userId = localStorage.getItem("userId");
-        setLoggedIn(false);
-        await axios.post(`http://localhost:8080/users/logout/${userId}`);
-        localStorage.removeItem("userId");
-        localStorage.setItem("loggedIn", false);
-        localStorage.removeItem("userName");
-        window.alert("You have been successfully logged out.");
-        setTimeout(() => {
-          navigate("/");
-        }, 1500);
-      } catch (err) {
-        console.log(err);
-      }
+    setBusy(true);
+    try {
+      const userId = localStorage.getItem("userId");
+      await axios.post(`${API_BASE}/users/logout/${userId}`);
+      clearSession();
+      toast.success("You have been successfully logged out.");
+      navigate("/");
+      setLoggedIn(false);
+    } catch (err) {
+      console.log(err);
+      toast.error("Could not log out. Please try again.");
+    } finally {
+      setBusy(false);
+      setDialog(null);
     }
   };
 
   const deleteUser = async () => {
-    const confirmLogout = window.confirm(
-      "Are you sure you want to delete account?"
-    );
-    if (confirmLogout) {
-      try {
-        const deleteId = localStorage.getItem("userId");
-        setLoggedIn(false);
-        await axios.delete(`http://localhost:8080/users/${deleteId}`);
-        localStorage.removeItem("userId");
-        localStorage.setItem("loggedIn", false);
-        localStorage.removeItem("userName");
-        window.alert("Your account has been successfully deleted.");
-        setTimeout(() => {
-          navigate("/");
-        }, 1500);
-      } catch (err) {
-        console.log(err);
-      }
+    setBusy(true);
+    try {
+      const deleteId = localStorage.getItem("userId");
+      await axios.delete(`${API_BASE}/users/${deleteId}`);
+      clearSession();
+      toast.success("Your account has been successfully deleted.");
+      navigate("/");
+      setLoggedIn(false);
+    } catch (err) {
+      console.log(err);
+      toast.error("Could not delete your account. Please try again.");
+    } finally {
+      setBusy(false);
+      setDialog(null);
     }
   };
 
-  const handleMenuToggle = () => {
-    setMenuOpen(!menuOpen);
+  const openDialog = (kind) => {
+    setAccountOpen(false);
+    setMenuOpen(false);
+    setDialog(kind);
   };
 
   return (
-    <div>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <Link className="navbar-logo" to="/home">
-          <FontAwesomeIcon
-            icon={menuOpen ? faTimes : faBurger}
-            size="lg"
-            style={{
-              color: "#ffa21f",
-            }}
-          />
-          <span className="navbar-brand">Recipe App</span>
-        </Link>
-        <button
-          className={`navbar-toggler ${menuOpen ? "collapsed" : ""}`}
-          type="button"
-          onClick={handleMenuToggle}
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className={`navbar-collapse ${menuOpen ? "show" : ""}`}>
-          <ul className="navbar-nav">
-            <li className="nav-item">
-              <Link
-                to="/home"
-                className={`nav-link ${
-                  location.pathname === "/home" ? "active" : ""
-                }`}
-                style={{
-                  color: location.pathname === "/home" ? "#ffa21f" : "#fff",
-                  borderBottom:
-                    location.pathname === "/home"
-                      ? "2px solid #ffa21f"
-                      : "none",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = "#ffa21f";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.color =
-                    location.pathname === "/home" ? "#ffa21f" : "#fff";
-                }}
+    <>
+      <header className={`sn-nav ${scrolled ? "is-scrolled" : ""}`}>
+        <div className="sn-nav__inner">
+          <Brand to="/home" />
+
+          <nav className="sn-nav__links" aria-label="Main">
+            {LINKS.map(({ to, label }) => (
+              <NavLink key={to} to={to} className="sn-nav__link">
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <motion.span
+                        layoutId="sn-nav-pill"
+                        className="sn-nav__pill"
+                        transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                      />
+                    )}
+                    <span className="sn-nav__label">{label}</span>
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="sn-nav__actions">
+            <Link to="/add-recipe" className="sn-btn sn-btn--primary sn-btn--sm sn-nav__cta">
+              <FiPlus /> Share recipe
+            </Link>
+
+            <div className="sn-nav__account" ref={accountRef}>
+              <button
+                type="button"
+                className="sn-nav__account-btn"
+                onClick={() => setAccountOpen((open) => !open)}
+                aria-expanded={accountOpen}
+                aria-haspopup="menu"
               >
-                Home
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                to="/recipes"
-                className={`nav-link ${
-                  location.pathname === "/recipes" ? "active" : ""
-                }`}
-                style={{
-                  color: location.pathname === "/recipes" ? "#ffa21f" : "#fff",
-                  borderBottom:
-                    location.pathname === "/recipes"
-                      ? "2px solid #ffa21f"
-                      : "none",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = "#ffa21f";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.color =
-                    location.pathname === "/recipes" ? "#ffa21f" : "#fff";
-                }}
-              >
-                Recipes
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                to="/profile"
-                className={`nav-link ${
-                  location.pathname === "/profile" ? "active" : ""
-                }`}
-                style={{
-                  color: location.pathname === "/profile" ? "#ffa21f" : "#fff",
-                  borderBottom:
-                    location.pathname === "/profile"
-                      ? "2px solid #ffa21f"
-                      : "none",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = "#ffa21f";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.color =
-                    location.pathname === "/profile" ? "#ffa21f" : "#fff";
-                }}
-              >
-                Profile
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                to="/dashboard"
-                className={`nav-link ${
-                  location.pathname === "/dashboard" ? "active" : ""
-                }`}
-                style={{
-                  color:
-                    location.pathname === "/dashboard" ? "#ffa21f" : "#fff",
-                  borderBottom:
-                    location.pathname === "/dashboard"
-                      ? "2px solid #ffa21f"
-                      : "none",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = "#ffa21f";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.color =
-                    location.pathname === "/dashboard" ? "#ffa21f" : "#fff";
-                }}
-              >
-                Users
-              </Link>
-            </li>
-          </ul>
-          <div className="navbar-actions">
+                <Avatar name={name} size={34} />
+                <span className="sn-nav__account-name">{name.split(" ")[0]}</span>
+                <FiChevronDown className={`sn-nav__chevron ${accountOpen ? "is-open" : ""}`} />
+              </button>
+              <AnimatePresence>
+                {accountOpen && (
+                  <motion.div
+                    className="sn-nav__menu sn-card"
+                    role="menu"
+                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    <div className="sn-nav__menu-head">
+                      <Avatar name={name} size={42} />
+                      <div>
+                        <strong>{name}</strong>
+                        <span>Signed in</span>
+                      </div>
+                    </div>
+                    <Link to="/profile" role="menuitem" className="sn-nav__menu-item">
+                      <FiUser /> My profile
+                    </Link>
+                    <button type="button" role="menuitem" className="sn-nav__menu-item" onClick={() => openDialog("logout")}>
+                      <FiLogOut /> Log out
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="sn-nav__menu-item sn-nav__menu-item--danger"
+                      onClick={() => openDialog("delete")}
+                    >
+                      <FiTrash2 /> Deactivate account
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <button
-              onClick={handleLogout}
-              className="btn btn-outline-light"
-              style={{ marginRight: "20px" }}
+              type="button"
+              className={`sn-burger ${menuOpen ? "is-open" : ""}`}
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
             >
-              Logout
-            </button>
-            <button onClick={deleteUser} className="btn btn-outline-light">
-              Deactivate
+              <span />
+              <span />
+              <span />
             </button>
           </div>
         </div>
-      </nav>
-    </div>
+
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.nav
+              className="sn-nav__mobile"
+              aria-label="Mobile"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.div
+                className="sn-nav__mobile-inner"
+                initial="hidden"
+                animate="show"
+                variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05 } } }}
+              >
+                {LINKS.map(({ to, label, icon: Icon }) => (
+                  <motion.div key={to} variants={{ hidden: { opacity: 0, x: -12 }, show: { opacity: 1, x: 0 } }}>
+                    <NavLink to={to} className="sn-nav__mobile-link">
+                      <Icon /> {label}
+                    </NavLink>
+                  </motion.div>
+                ))}
+                <motion.div variants={{ hidden: { opacity: 0, x: -12 }, show: { opacity: 1, x: 0 } }}>
+                  <Link to="/add-recipe" className="sn-btn sn-btn--primary sn-btn--block">
+                    <FiPlus /> Share a recipe
+                  </Link>
+                </motion.div>
+                <motion.div
+                  className="sn-nav__mobile-actions"
+                  variants={{ hidden: { opacity: 0, x: -12 }, show: { opacity: 1, x: 0 } }}
+                >
+                  <button type="button" className="sn-btn sn-btn--ghost" onClick={() => openDialog("logout")}>
+                    <FiLogOut /> Log out
+                  </button>
+                  <button type="button" className="sn-btn sn-btn--danger" onClick={() => openDialog("delete")}>
+                    <FiTrash2 /> Deactivate
+                  </button>
+                </motion.div>
+              </motion.div>
+            </motion.nav>
+          )}
+        </AnimatePresence>
+      </header>
+
+      <ConfirmDialog
+        open={dialog === "logout"}
+        title="Log out?"
+        message="You can sign back in any time to pick up where you left off."
+        confirmLabel="Log out"
+        busy={busy}
+        onConfirm={handleLogout}
+        onCancel={() => setDialog(null)}
+      />
+      <ConfirmDialog
+        open={dialog === "delete"}
+        tone="danger"
+        title="Delete your account?"
+        message="This permanently removes your account. It can't be undone."
+        confirmLabel="Delete account"
+        busy={busy}
+        onConfirm={deleteUser}
+        onCancel={() => setDialog(null)}
+      />
+    </>
   );
 };
 
