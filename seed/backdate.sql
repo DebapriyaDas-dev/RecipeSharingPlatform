@@ -1,0 +1,35 @@
+-- The API treats createdAt as read-only, so the demo recipes are backdated here.
+-- Spreads them over the past weeks so "Newest" sorting has an order. Safe to re-run.
+USE recipe_sharing;
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 32 DAY WHERE recipe_name = 'Butter Chicken' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 31 DAY WHERE recipe_name = 'Dal Makhani' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 30 DAY WHERE recipe_name = 'Paneer Tikka Masala' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 29 DAY WHERE recipe_name = 'Masala Chai' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 28 DAY WHERE recipe_name = 'Spaghetti Carbonara' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 27 DAY WHERE recipe_name = 'Margherita Pizza' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 26 DAY WHERE recipe_name = 'Classic Tiramisu' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 25 DAY WHERE recipe_name = 'Wild Mushroom Risotto' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 24 DAY WHERE recipe_name = 'Shoyu Chicken Ramen' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 23 DAY WHERE recipe_name = 'Salmon Teriyaki Bowl' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 22 DAY WHERE recipe_name = 'Vegetable Gyoza' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 21 DAY WHERE recipe_name = 'Matcha Soufflé Pancakes' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 20 DAY WHERE recipe_name = 'Silky Hummus' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 19 DAY WHERE recipe_name = 'Chicken Shawarma Wraps' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 18 DAY WHERE recipe_name = 'Fattoush Salad' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 17 DAY WHERE recipe_name = 'Shakshuka' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 16 DAY WHERE recipe_name = 'Goan Fish Curry' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 15 DAY WHERE recipe_name = 'Coconut Prawn Pulao' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 14 DAY WHERE recipe_name = 'Mango Lassi' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 13 DAY WHERE recipe_name = 'Banana Walnut Pancakes' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 12 DAY WHERE recipe_name = 'French Onion Soup' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 11 DAY WHERE recipe_name = 'Provençal Ratatouille' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 10 DAY WHERE recipe_name = 'Crêpes with Berries' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 9 DAY WHERE recipe_name = 'Chocolate Lava Cake' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 8 DAY WHERE recipe_name = 'Masala Dosa' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 7 DAY WHERE recipe_name = 'Hyderabadi Veg Biryani' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 6 DAY WHERE recipe_name = 'Lemon Rice' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 5 DAY WHERE recipe_name = 'Gulab Jamun' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 4 DAY WHERE recipe_name = 'Chicken Tinga Tacos' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 3 DAY WHERE recipe_name = 'Chunky Guacamole' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 2 DAY WHERE recipe_name = 'Esquites Street Corn Salad' AND file_name LIKE 'seed-%';
+UPDATE recipes SET created_at = CURDATE() - INTERVAL 1 DAY WHERE recipe_name = 'Churros with Chocolate' AND file_name LIKE 'seed-%';
