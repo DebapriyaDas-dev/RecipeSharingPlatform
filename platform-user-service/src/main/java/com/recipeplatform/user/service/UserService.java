@@ -1,14 +1,16 @@
 package com.recipeplatform.user.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,7 +32,7 @@ public class UserService {
 	private RestTemplate restTemplate;
 
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-	
+
 	public List<User> getAll() {
 		return userRepository.findAll();
 	}
@@ -53,12 +55,12 @@ public class UserService {
         if (!user.getPassword().equals(logindto.getPassword())) {
             throw new UserNotFoundException("Invalid password");
         }
-        
+
         user.setLoggedIn(true);
         userRepository.save(user);
         return user;
     }
-	
+
 	public void logout(String userId) {
 		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 		user.setLoggedIn(false);
@@ -68,43 +70,14 @@ public class UserService {
 	public List<User> findAllUsers() {
 		List<User> users = userRepository.findAll();
 		logger.info("Fetched {} users from the database.", users.size());
-		return users.stream().map(user -> {
-			String userId = user.getId();
-			Rating[] ratingsOfUser = restTemplate.getForObject("http://RATING-SERVICE/ratings/user/" + userId,
-					Rating[].class);
-			List<Rating> ratings = Arrays.stream(ratingsOfUser).toList();
-
-			List<Rating> ratingList = ratings.stream().map(rating -> {
-				ResponseEntity<Recipe> recipeEntity = restTemplate
-						.getForEntity("http://RECIPE-SERVICE/recipes/" + rating.getRecipeId(), Recipe.class);
-				Recipe recipe = recipeEntity.getBody();
-				if (recipe != null) {
-					User recipeUser = userRepository.findById(recipe.getUserId())
-							.orElseThrow(() -> new UserNotFoundException(
-									"User with the given id is not found on the server: " + recipe.getUserId()));
-					recipe.setUserName(recipeUser.getName());
-				}
-				rating.setRecipe(recipe);
-				return rating;
-			}).collect(Collectors.toList());
-
-			user.setRatings(ratingList);
-
-			Recipe[] recipesOfUser = restTemplate.getForObject("http://RECIPE-SERVICE/recipes/user/" + user.getId(),
-					Recipe[].class);
-			// List<Recipe> recipes = Arrays.stream(recipesOfUser).toList();
-
-			List<Recipe> recipes = Arrays.stream(recipesOfUser).peek(recipe -> recipe.setUserName(user.getName()))
-					.collect(Collectors.toList());
-
-			// Fetching the recipes posted by the current user
-			user.setRecipes(recipes);
-
-			return user;
-		}).collect(Collectors.toList());
+		// One call per downstream service, regardless of how many users there are
+		Rating[] ratings = restTemplate.getForObject("http://RATING-SERVICE/ratings/all-ratings", Rating[].class);
+		Recipe[] recipes = restTemplate.getForObject("http://RECIPE-SERVICE/recipes/all-recipes", Recipe[].class);
+		attachRatingsAndRecipes(users, toList(ratings), toList(recipes));
+		return users;
 	}
 
-	
+
 	public void deleteUser(String userId) {
 		Optional<User> user = userRepository.findById(userId);
 		if (user.isPresent()) {
@@ -117,36 +90,58 @@ public class UserService {
 	public User findUserById(String userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new UserNotFoundException("User with given id is not found on server!! " + userId));
-		Rating[] ratingsOfUser = restTemplate.getForObject("http://RATING-SERVICE/ratings/user/" + user.getId(),
-				Rating[].class);
-
-		List<Rating> ratings = Arrays.stream(ratingsOfUser).toList();
-
-		List<Rating> ratingList = ratings.stream().map(rating -> {
-			ResponseEntity<Recipe> forEntity = restTemplate
-					.getForEntity("http://RECIPE-SERVICE/recipes/" + rating.getRecipeId(), Recipe.class);
-			Recipe recipe = forEntity.getBody();
-			User user1 = userRepository.findById(recipe.getUserId()).orElseThrow(
-					() -> new UserNotFoundException("User with given id is not found on server!! " + userId));
-			recipe.setUserName(user1.getName());
-			rating.setRecipe(recipe);
-			return rating;
-		}).collect(Collectors.toList());
-
-		// Fetching the ratings done by the current user
-		user.setRatings(ratingList);
-
-		Recipe[] recipesOfUser = restTemplate.getForObject("http://RECIPE-SERVICE/recipes/user/" + user.getId(),
-				Recipe[].class);
-		// List<Recipe> recipes = Arrays.stream(recipesOfUser).toList();
-
-		List<Recipe> recipes = Arrays.stream(recipesOfUser).peek(recipe -> recipe.setUserName(user.getName()))
-				.collect(Collectors.toList());
-
-		// Fetching the recipes posted by the current user
-		user.setRecipes(recipes);
-
+		Rating[] ratings = restTemplate.getForObject("http://RATING-SERVICE/ratings/user/" + userId, Rating[].class);
+		Recipe[] recipes = restTemplate.getForObject("http://RECIPE-SERVICE/recipes/user/" + userId, Recipe[].class);
+		attachRatingsAndRecipes(List.of(user), toList(ratings), toList(recipes));
 		return user;
+	}
+
+	// Sets each user's ratings (with the rated recipe) and posted recipes. Recipes not already
+	// fetched are loaded in one batch call and their authors in one query. A rating whose recipe
+	// no longer exists is kept with a null recipe instead of failing the whole request.
+	private void attachRatingsAndRecipes(List<User> users, List<Rating> ratings, List<Recipe> postedRecipes) {
+		Map<String, Recipe> recipesById = new HashMap<>();
+		postedRecipes.forEach(recipe -> recipesById.put(recipe.getRecipeId(), recipe));
+
+		List<String> missingRecipeIds = ratings.stream().map(Rating::getRecipeId)
+				.filter(id -> id != null && !recipesById.containsKey(id)).distinct().toList();
+		if (!missingRecipeIds.isEmpty()) {
+			Recipe[] rated = restTemplate.postForObject("http://RECIPE-SERVICE/recipes/batch", missingRecipeIds,
+					Recipe[].class);
+			toList(rated).forEach(recipe -> recipesById.put(recipe.getRecipeId(), recipe));
+		}
+
+		Map<String, String> userNames = new HashMap<>();
+		users.forEach(user -> userNames.put(user.getId(), user.getName()));
+		List<String> unknownAuthorIds = recipesById.values().stream().map(Recipe::getUserId)
+				.filter(id -> id != null && !userNames.containsKey(id)).distinct().toList();
+		if (!unknownAuthorIds.isEmpty()) {
+			userRepository.findAllById(unknownAuthorIds)
+					.forEach(author -> userNames.put(author.getId(), author.getName()));
+		}
+		recipesById.values().forEach(recipe -> recipe.setUserName(userNames.get(recipe.getUserId())));
+
+		ratings.forEach(rating -> {
+			Recipe recipe = recipesById.get(rating.getRecipeId());
+			if (recipe == null) {
+				logger.warn("Rating {} refers to recipe {} which does not exist.", rating.getRatingId(),
+						rating.getRecipeId());
+			}
+			rating.setRecipe(recipe);
+		});
+
+		Map<String, List<Rating>> ratingsByUser = ratings.stream().filter(rating -> rating.getUserId() != null)
+				.collect(Collectors.groupingBy(Rating::getUserId));
+		Map<String, List<Recipe>> recipesByUser = postedRecipes.stream().filter(recipe -> recipe.getUserId() != null)
+				.collect(Collectors.groupingBy(Recipe::getUserId));
+		users.forEach(user -> {
+			user.setRatings(ratingsByUser.getOrDefault(user.getId(), new ArrayList<>()));
+			user.setRecipes(recipesByUser.getOrDefault(user.getId(), new ArrayList<>()));
+		});
+	}
+
+	private static <T> List<T> toList(T[] array) {
+		return array == null ? List.of() : Arrays.asList(array);
 	}
 
 	public User updateUser(String id, User updatedUser) {

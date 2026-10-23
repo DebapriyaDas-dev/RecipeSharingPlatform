@@ -56,6 +56,12 @@ public class RecipeController {
 		return ResponseEntity.ok(recipe);
 	}
 
+	// Get recipes for a list of IDs; unknown IDs are skipped
+	@PostMapping("/batch")
+	public ResponseEntity<List<Recipe>> getRecipesByIds(@RequestBody List<String> ids) {
+		return ResponseEntity.ok(recipeService.findRecipesByIds(ids));
+	}
+
 	// Create user
 	@PostMapping("/new-recipe")
 	public ResponseEntity<Recipe> createUser(@Validated @RequestBody Recipe recipe) {

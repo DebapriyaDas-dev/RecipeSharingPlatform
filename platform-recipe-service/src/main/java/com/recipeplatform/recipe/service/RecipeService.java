@@ -74,6 +74,11 @@ public class RecipeService {
 				.orElseThrow(() -> new ResourceNotFoundException("Recipe with given id not found ! - " + id));
 	}
 
+	// get multiple, skipping IDs that do not exist
+	public List<Recipe> findRecipesByIds(List<String> ids) {
+		return recipeRepository.findAllById(ids);
+	}
+
 	public String delete(String id) {
 		Optional<Recipe> recipe = recipeRepository.findById(id);
 		if (recipe.isPresent()) {

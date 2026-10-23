@@ -82,7 +82,7 @@ export default function ViewUser() {
                                             <tbody>
                                                 {rating.map((item) => (
                                                     <tr>
-                                                        <td>{item.recipe.name}</td>
+                                                        <td>{item.recipe ? item.recipe.name : "Recipe removed"}</td>
                                                         <td>{item.rating}</td>
                                                     </tr>
                                                 ))}

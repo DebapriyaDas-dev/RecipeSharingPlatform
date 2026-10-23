@@ -5,7 +5,8 @@ import java.time.LocalDate;
 
 public class Recipe {
 
-	
+	private String recipeId;
+
 	private String name;
 	
 	private String userId; 
@@ -35,6 +36,14 @@ public class Recipe {
 		this.userId=userId;
 	}
 	
+
+	public String getRecipeId() {
+		return recipeId;
+	}
+
+	public void setRecipeId(String recipeId) {
+		this.recipeId = recipeId;
+	}
 
 	public String getUserId() {
 		return userId;
