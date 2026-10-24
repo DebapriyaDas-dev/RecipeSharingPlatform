@@ -246,7 +246,7 @@ const ViewRecipePage = () => {
                     <button
                       type="button"
                       className={`sn-ingredient ${checked[i] ? "is-done" : ""}`}
-                      onClick={() => setChecked({ ...checked, [i]: !checked[i] })}
+                      onClick={() => setChecked((current) => ({ ...current, [i]: !current[i] }))}
                       aria-pressed={Boolean(checked[i])}
                     >
                       <span className="sn-ingredient__box">
